@@ -129,7 +129,7 @@ export function ReportDeck(props: { report: Report }) {
           </CardContent>
         </Card>
       ) : (
-        <div className="relative mx-auto h-[520px] w-full">
+        <div className="relative mx-auto mt-6 w-full overflow-hidden h-[calc(100vh-260px)] min-h-[520px] max-h-[760px]">
           {stack
             .map((idea) => (
               <TinderCard
@@ -137,8 +137,8 @@ export function ReportDeck(props: { report: Report }) {
                 onSwipe={(dir) => onSwipe(dir, idea)}
                 preventSwipe={["up", "down"]}
               >
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <Card className="w-full max-w-xl select-none">
+                <div className="absolute inset-0 flex items-start justify-center pt-2">
+                  <Card className="w-full max-w-xl select-none shadow-sm">
                     <CardHeader>
                       <CardTitle className="text-base">{idea.title}</CardTitle>
                     </CardHeader>
