@@ -1,28 +1,28 @@
-import { getTranslations } from "next-intl/server"
 import { HomeClient } from "@/components/home-client"
 
-export default async function HomePage() {
-  const t = await getTranslations()
+// Inline messages for server-side rendering
+const messages = {
+  appName: "Reddit Idea Miner",
+  subtitle: "Generate 10 evidence-backed product ideas from real Reddit JSON.",
+  libraryTitle: "Library",
+  keyword: "Keyword *",
+  keywordPh: "e.g. table of contents",
+  subreddit: "Subreddit (optional)",
+  subredditPh: "e.g. productivity",
+  range: "Time range",
+  rangeWeek: "Week",
+  rangeMonth: "Month",
+  rangeYear: "Year",
+  generate: "Generate report",
+  generating: "Generating…",
+  keywordRequired: "Keyword is required.",
+  genericFail: "Failed. If you see Reddit 403, try again or switch time range/subreddit.",
+}
 
+export default async function HomePage() {
   return (
     <HomeClient
-      labels={{
-        appName: t("app.name"),
-        subtitle: t("home.subtitle"),
-        libraryTitle: t("library.title"),
-        keyword: t("home.keyword"),
-        keywordPh: t("home.keyword_ph"),
-        subreddit: t("home.subreddit"),
-        subredditPh: t("home.subreddit_ph"),
-        range: t("home.range"),
-        rangeWeek: t("range.week"),
-        rangeMonth: t("range.month"),
-        rangeYear: t("range.year"),
-        generate: t("home.generate"),
-        generating: t("home.generating"),
-        keywordRequired: t("errors.keyword_required"),
-        genericFail: t("errors.generic_fail"),
-      }}
+      labels={messages}
     />
   )
 }

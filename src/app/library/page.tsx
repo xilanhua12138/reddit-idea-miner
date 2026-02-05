@@ -4,16 +4,24 @@ import { useEffect, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
-import { useTranslations } from "next-intl"
 import { LangSwitch } from "@/components/lang-switch"
 import { IdeaDrawer } from "@/components/idea-drawer"
 import { loadLibrary, type LibraryEntry, type LibraryState } from "@/lib/library-store"
 import { LIBRARY_EVENT } from "@/lib/library-events"
 
+const labels = {
+  title: "Library",
+  subtitle: "Stored locally in your browser.",
+  navHome: "Home",
+  liked: "Liked",
+  disliked: "Disliked",
+  empty: "Nothing here yet.",
+  from: "From",
+}
+
 type Tab = "liked" | "disliked"
 
 function EntryCard(props: { entry: LibraryEntry; onOpen: () => void }) {
-  const t = useTranslations()
   const { entry } = props
   const idea = entry.idea
   return (
@@ -34,7 +42,7 @@ function EntryCard(props: { entry: LibraryEntry; onOpen: () => void }) {
           <Badge variant="outline">evidence {idea.quotes.length}</Badge>
         </div>
         <p className="text-xs text-muted-foreground">
-          {t("library.from")}: {entry.query.keyword}
+          {labels.from}: {entry.query.keyword}
           {entry.query.subreddit ? ` · r/${entry.query.subreddit}` : ""}
           {` · ${entry.query.range}`}
         </p>
@@ -44,7 +52,6 @@ function EntryCard(props: { entry: LibraryEntry; onOpen: () => void }) {
 }
 
 export default function LibraryPage() {
-  const t = useTranslations()
   const [tab, setTab] = useState<Tab>("liked")
   const [openIdea, setOpenIdea] = useState<LibraryEntry | null>(null)
 
@@ -70,10 +77,10 @@ export default function LibraryPage() {
     <main className="mx-auto max-w-5xl px-4 py-8">
       <div className="mb-6 flex items-start justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold">{t("library.title")}</h1>
-          <p className="text-sm text-muted-foreground">{t("library.subtitle")}</p>
+          <h1 className="text-2xl font-semibold">{labels.title}</h1>
+          <p className="text-sm text-muted-foreground">{labels.subtitle}</p>
           <a className="mt-2 inline-block text-sm underline" href="/">
-            {t("nav.home")}
+            {labels.navHome}
           </a>
         </div>
         <LangSwitch />
@@ -84,20 +91,20 @@ export default function LibraryPage() {
           className={`rounded-md border px-3 py-2 text-sm ${tab === "liked" ? "bg-foreground text-background" : "bg-background"}`}
           onClick={() => setTab("liked")}
         >
-          {t("library.liked")} ({state.liked.length})
+          {labels.liked} ({state.liked.length})
         </button>
         <button
           className={`rounded-md border px-3 py-2 text-sm ${tab === "disliked" ? "bg-foreground text-background" : "bg-background"}`}
           onClick={() => setTab("disliked")}
         >
-          {t("library.disliked")} ({state.disliked.length})
+          {labels.disliked} ({state.disliked.length})
         </button>
       </div>
 
       <Separator className="mb-4" />
 
       {list.length === 0 ? (
-        <p className="text-sm text-muted-foreground">{t("library.empty")}</p>
+        <p className="text-sm text-muted-foreground">{labels.empty}</p>
       ) : (
         <div className="grid gap-4 md:grid-cols-2">
           {list.map((entry) => (

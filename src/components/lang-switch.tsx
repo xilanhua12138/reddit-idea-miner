@@ -1,7 +1,6 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useTranslations } from "next-intl"
 
 type Locale = "en" | "zh"
 const COOKIE = "rim_locale"
@@ -16,8 +15,12 @@ function setCookie(name: string, value: string) {
   document.cookie = `${name}=${encodeURIComponent(value)}; Path=/; Max-Age=${60 * 60 * 24 * 365}`
 }
 
+const labels = {
+  en: { en: "EN", zh: "中文" },
+  zh: { en: "EN", zh: "中文" },
+}
+
 export function LangSwitch() {
-  const t = useTranslations()
   const [locale, setLocale] = useState<Locale>("en")
 
   useEffect(() => {
@@ -31,6 +34,8 @@ export function LangSwitch() {
     window.location.reload()
   }
 
+  const t = labels[locale]
+
   return (
     <div className="flex items-center gap-2 text-xs">
       <button
@@ -38,14 +43,14 @@ export function LangSwitch() {
         className={`rounded-md border px-2 py-1 ${locale === "en" ? "bg-foreground text-background" : "bg-background"}`}
         onClick={() => change("en")}
       >
-        {t("lang.en")}
+        {t.en}
       </button>
       <button
         type="button"
         className={`rounded-md border px-2 py-1 ${locale === "zh" ? "bg-foreground text-background" : "bg-background"}`}
         onClick={() => change("zh")}
       >
-        {t("lang.zh")}
+        {t.zh}
       </button>
     </div>
   )
