@@ -65,8 +65,8 @@ export default function LibraryPage() {
   return (
     <main className="mx-auto max-w-5xl px-4 py-8">
       <div className="mb-6">
-        <h1 className="text-2xl font-semibold">Library</h1>
-        <p className="text-sm text-muted-foreground">Stored locally in your browser.</p>
+        <h1 className="text-2xl font-semibold">我的库</h1>
+        <p className="text-sm text-muted-foreground">保存在你的浏览器本地。</p>
       </div>
 
       <div className="mb-4 flex gap-2">
@@ -74,20 +74,20 @@ export default function LibraryPage() {
           className={`rounded-md border px-3 py-2 text-sm ${tab === "liked" ? "bg-foreground text-background" : "bg-background"}`}
           onClick={() => setTab("liked")}
         >
-          Liked ({state.liked.length})
+          喜欢 ({state.liked.length})
         </button>
         <button
           className={`rounded-md border px-3 py-2 text-sm ${tab === "disliked" ? "bg-foreground text-background" : "bg-background"}`}
           onClick={() => setTab("disliked")}
         >
-          Disliked ({state.disliked.length})
+          不喜欢 ({state.disliked.length})
         </button>
       </div>
 
       <Separator className="mb-4" />
 
       {list.length === 0 ? (
-        <p className="text-sm text-muted-foreground">Nothing here yet.</p>
+        <p className="text-sm text-muted-foreground">这里还没有内容。</p>
       ) : (
         <div className="grid gap-4 md:grid-cols-2">
           {list.map((entry) => (

@@ -1,6 +1,7 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { createRef, useEffect, useMemo, useState } from "react"
 import TinderCard from "react-tinder-card"
 import type { Idea, Report } from "@/lib/types"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -42,7 +43,6 @@ export function ReportDeck(props: { report: Report }) {
   const ideas = report.ideas
 
   const [index, setIndex] = useState(0)
-  const current = ideas[index]
 
   const [expanded, setExpanded] = useState(false)
   const [tutorialOpen, setTutorialOpen] = useState(false)
@@ -58,8 +58,13 @@ export function ReportDeck(props: { report: Report }) {
   // Inline details: show full content inside the card. Evidence defaults to 3 quotes.
   const defaultEvidenceCount = 3
 
+  const childRefs = useMemo(
+    () => Array.from({ length: ideas.length }, () => createRef<any>()),
+    [ideas.length]
+  )
+
   const stack = useMemo(() => {
-    // render all cards so swipe library works; top card is last
+    // render remaining cards; top card is last
     return ideas.slice(index)
   }, [ideas, index])
 
@@ -78,20 +83,16 @@ export function ReportDeck(props: { report: Report }) {
 
       if (e.key === "ArrowRight") {
         e.preventDefault()
-        likeIdea({ report, idea: current })
-        setExpanded(false)
-        setIndex((i) => i + 1)
+        childRefs[index]?.current?.swipe("right")
       } else if (e.key === "ArrowLeft") {
         e.preventDefault()
-        dislikeIdea({ report, idea: current })
-        setExpanded(false)
-        setIndex((i) => i + 1)
+        childRefs[index]?.current?.swipe("left")
       }
     }
 
     window.addEventListener("keydown", onKeyDown)
     return () => window.removeEventListener("keydown", onKeyDown)
-  }, [current, done, report, tutorialOpen])
+  }, [childRefs, done, index, tutorialOpen])
 
   return (
     <main className="mx-auto min-h-[80vh] max-w-3xl px-4 py-8">
@@ -103,16 +104,16 @@ export function ReportDeck(props: { report: Report }) {
         }}
       />
 
-      <div className="mb-6">
+      <div className="mb-2">
         <h1 className="text-2xl font-semibold">Reddit Idea Miner</h1>
         <p className="text-sm text-muted-foreground">
-          Keyword: <span className="font-medium text-foreground">{report.query.keyword}</span>
+          关键词：<span className="font-medium text-foreground">{report.query.keyword}</span>
           {report.query.subreddit ? (
             <>
-              {" "}· Subreddit: <span className="font-medium text-foreground">r/{report.query.subreddit}</span>
+              {" "}· 子版块：<span className="font-medium text-foreground">r/{report.query.subreddit}</span>
             </>
           ) : null}
-          {" "}· Range: <span className="font-medium text-foreground">{report.query.range}</span>
+          {" "}· 时间范围：<span className="font-medium text-foreground">{report.query.range}</span>
         </p>
         <p className="mt-1 text-xs text-muted-foreground">
           {Math.min(index + 1, total)}/{total}
@@ -122,10 +123,10 @@ export function ReportDeck(props: { report: Report }) {
       {done ? (
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">All done</CardTitle>
+            <CardTitle className="text-base">已完成</CardTitle>
           </CardHeader>
           <CardContent className="text-sm text-muted-foreground">
-            已经全部滑完。去 <a className="underline" href="/library">Library</a> 查看喜欢/不喜欢。
+            已经全部滑完。去 <a className="underline" href="/library">我的库</a> 查看喜欢/不喜欢。
           </CardContent>
         </Card>
       ) : (
@@ -133,12 +134,13 @@ export function ReportDeck(props: { report: Report }) {
           {stack
             .map((idea) => (
               <TinderCard
+                ref={childRefs[index + stack.indexOf(idea)]}
                 key={idea.id}
                 onSwipe={(dir) => onSwipe(dir, idea)}
                 preventSwipe={["up", "down"]}
               >
                 <div className="absolute inset-0 flex items-start justify-center pt-2">
-                  <Card className="w-full max-w-xl select-none shadow-sm">
+                  <Card className="w-full max-w-xl select-none shadow-sm h-[600px]">
                     <CardHeader>
                       <CardTitle className="text-base">{idea.title}</CardTitle>
                     </CardHeader>
@@ -155,13 +157,13 @@ export function ReportDeck(props: { report: Report }) {
 
                       <Tabs defaultValue="evidence" className="w-full">
                         <TabsList>
-                          <TabsTrigger value="evidence">Evidence</TabsTrigger>
-                          <TabsTrigger value="insight">Insight</TabsTrigger>
-                          <TabsTrigger value="build">Build</TabsTrigger>
-                          <TabsTrigger value="actions">Actions</TabsTrigger>
+                          <TabsTrigger value="evidence">证据</TabsTrigger>
+                          <TabsTrigger value="insight">洞察</TabsTrigger>
+                          <TabsTrigger value="build">构建</TabsTrigger>
+                          <TabsTrigger value="actions">行动</TabsTrigger>
                         </TabsList>
 
-                        <TabsContent value="evidence" className="space-y-2">
+                        <TabsContent value="evidence" className="space-y-2 max-h-[320px] overflow-y-auto pr-1">
                           {(expanded ? idea.quotes : idea.quotes.slice(0, defaultEvidenceCount)).map((q, i) => (
                             <div key={i} className="rounded-md border p-3">
                               <p className="text-sm">“{q.text}”</p>

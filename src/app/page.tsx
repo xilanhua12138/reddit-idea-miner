@@ -76,30 +76,30 @@ export default function HomePage() {
         <CardHeader>
           <CardTitle className="text-xl">Reddit Idea Miner</CardTitle>
           <p className="text-sm text-muted-foreground">
-            Generate 10 evidence-backed product ideas from real Reddit JSON.
+            基于真实 Reddit 讨论，生成 10 个可核验的产品点子。
           </p>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <label className="text-sm font-medium">Keyword *</label>
+            <label className="text-sm font-medium">关键词 *</label>
             <Input
               value={keyword}
               onChange={(e) => setKeyword(e.target.value)}
-              placeholder="e.g. table of contents"
+              placeholder="例如：table of contents"
             />
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium">Subreddit (optional)</label>
+            <label className="text-sm font-medium">子版块（可选）</label>
             <Input
               value={subreddit}
               onChange={(e) => setSubreddit(e.target.value)}
-              placeholder="e.g. productivity"
+              placeholder="例如：productivity"
             />
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium">Time range</label>
+            <label className="text-sm font-medium">时间范围</label>
             <div className="flex gap-2">
               {(["week", "month", "year"] as Range[]).map((r) => (
                 <button
@@ -121,7 +121,7 @@ export default function HomePage() {
           {error ? <p className="text-sm text-red-600">{error}</p> : null}
 
           <Button onClick={onGenerate} disabled={loading} className="w-full">
-            {loading ? "Generating…" : "Generate report"}
+            {loading ? "生成中…" : "生成报告"}
           </Button>
         </CardContent>
       </Card>
