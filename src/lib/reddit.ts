@@ -2,12 +2,15 @@ import { cache } from "@/lib/memory-cache"
 
 export type Range = "week" | "month" | "year"
 
-const BASE = "https://www.reddit.com"
+// Reddit often blocks server-side requests to www.reddit.com with 403.
+// old.reddit.com is typically more tolerant for JSON endpoints.
+const BASE = "https://old.reddit.com"
 
 function ua() {
   return (
     process.env.REDDIT_USER_AGENT ||
-    "RedditIdeaMiner/1.0 (https://example.com; contact: you@example.com)"
+    // A browser-like UA reduces 403 blocks.
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36 RedditIdeaMiner/1.0"
   )
 }
 
@@ -20,6 +23,7 @@ export async function redditFetchJson<T>(url: string): Promise<T> {
     headers: {
       "User-Agent": ua(),
       Accept: "application/json",
+      "Accept-Language": "en-US,en;q=0.9",
     },
     // Reddit can be sensitive to caching; we do our own
     cache: "no-store",
