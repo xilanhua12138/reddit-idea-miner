@@ -5,13 +5,13 @@ import TinderCard from "react-tinder-card"
 import type { Idea, Report } from "@/lib/types"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { IdeaDrawer } from "@/components/idea-drawer"
 import {
   dislikeIdea,
   hasSeenTutorial,
   likeIdea,
   markTutorialSeen,
 } from "@/lib/library-store"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 function TutorialOverlay(props: { open: boolean; onClose: () => void }) {
   if (!props.open) return null
@@ -20,7 +20,7 @@ function TutorialOverlay(props: { open: boolean; onClose: () => void }) {
       <div className="w-[92vw] max-w-sm rounded-xl border bg-background p-5 shadow-lg">
         <div className="space-y-2">
           <p className="text-sm font-medium">右滑喜欢 · 左滑不喜欢</p>
-          <p className="text-sm text-muted-foreground">点卡片可看详情</p>
+          <p className="text-sm text-muted-foreground">卡片里直接看详情</p>
         </div>
         <button
           className="mt-4 w-full rounded-md bg-foreground px-4 py-2 text-sm font-medium text-background"
@@ -44,7 +44,7 @@ export function ReportDeck(props: { report: Report }) {
   const [index, setIndex] = useState(0)
   const current = ideas[index]
 
-  const [drawerOpen, setDrawerOpen] = useState(false)
+  const [expanded, setExpanded] = useState(false)
   const [tutorialOpen, setTutorialOpen] = useState(false)
 
   useEffect(() => {
@@ -55,6 +55,9 @@ export function ReportDeck(props: { report: Report }) {
 
   const done = index >= total
 
+  // Inline details: show full content inside the card. Evidence defaults to 3 quotes.
+  const defaultEvidenceCount = 3
+
   const stack = useMemo(() => {
     // render all cards so swipe library works; top card is last
     return ideas.slice(index)
@@ -64,29 +67,31 @@ export function ReportDeck(props: { report: Report }) {
     if (dir === "right") likeIdea({ report, idea })
     if (dir === "left") dislikeIdea({ report, idea })
 
+    setExpanded(false)
     setIndex((i) => i + 1)
   }
 
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
       if (tutorialOpen) return
-      if (drawerOpen) return
       if (done) return
 
       if (e.key === "ArrowRight") {
         e.preventDefault()
         likeIdea({ report, idea: current })
+        setExpanded(false)
         setIndex((i) => i + 1)
       } else if (e.key === "ArrowLeft") {
         e.preventDefault()
         dislikeIdea({ report, idea: current })
+        setExpanded(false)
         setIndex((i) => i + 1)
       }
     }
 
     window.addEventListener("keydown", onKeyDown)
     return () => window.removeEventListener("keydown", onKeyDown)
-  }, [current, done, drawerOpen, report, tutorialOpen])
+  }, [current, done, report, tutorialOpen])
 
   return (
     <main className="mx-auto min-h-[80vh] max-w-3xl px-4 py-8">
@@ -133,15 +138,13 @@ export function ReportDeck(props: { report: Report }) {
                 preventSwipe={["up", "down"]}
               >
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <Card
-                    className="w-full max-w-xl select-none"
-                    onClick={() => setDrawerOpen(true)}
-                  >
+                  <Card className="w-full max-w-xl select-none">
                     <CardHeader>
                       <CardTitle className="text-base">{idea.title}</CardTitle>
                     </CardHeader>
-                    <CardContent className="space-y-3">
+                    <CardContent className="space-y-4">
                       <p className="text-sm text-muted-foreground">{idea.oneLiner}</p>
+
                       <div className="flex flex-wrap gap-2">
                         <Badge variant="secondary">pain {idea.scores.pain}</Badge>
                         <Badge variant="secondary">repeat {idea.scores.repeat}</Badge>
@@ -149,8 +152,51 @@ export function ReportDeck(props: { report: Report }) {
                         <Badge>total {idea.scores.total}</Badge>
                         <Badge variant="outline">evidence {idea.quotes.length}</Badge>
                       </div>
+
+                      <Tabs defaultValue="evidence" className="w-full">
+                        <TabsList>
+                          <TabsTrigger value="evidence">Evidence</TabsTrigger>
+                          <TabsTrigger value="insight">Insight</TabsTrigger>
+                          <TabsTrigger value="build">Build</TabsTrigger>
+                          <TabsTrigger value="actions">Actions</TabsTrigger>
+                        </TabsList>
+
+                        <TabsContent value="evidence" className="space-y-2">
+                          {(expanded ? idea.quotes : idea.quotes.slice(0, defaultEvidenceCount)).map((q, i) => (
+                            <div key={i} className="rounded-md border p-3">
+                              <p className="text-sm">“{q.text}”</p>
+                              <p className="mt-2 text-xs text-muted-foreground">
+                                来源: r/{q.subreddit} · {q.kind} · score {q.score} · u/{q.author}
+                              </p>
+                            </div>
+                          ))}
+                        </TabsContent>
+
+                        <TabsContent value="insight">
+                          <p className="text-sm text-muted-foreground whitespace-pre-wrap">{idea.insight}</p>
+                        </TabsContent>
+
+                        <TabsContent value="build">
+                          <p className="text-sm text-muted-foreground whitespace-pre-wrap">{idea.build}</p>
+                        </TabsContent>
+
+                        <TabsContent value="actions">
+                          <p className="text-sm text-muted-foreground whitespace-pre-wrap">{idea.actions}</p>
+                        </TabsContent>
+                      </Tabs>
+
+                      {idea.quotes.length > defaultEvidenceCount ? (
+                        <button
+                          type="button"
+                          className="text-xs text-muted-foreground underline"
+                          onClick={() => setExpanded((v) => !v)}
+                        >
+                          {expanded ? "收起" : "展开更多"}
+                        </button>
+                      ) : null}
+
                       <p className="text-xs text-muted-foreground">
-                        左滑不喜欢 · 右滑喜欢 · 点击看详情
+                        左滑不喜欢 · 右滑喜欢 · （←/→）快捷键
                       </p>
                     </CardContent>
                   </Card>
@@ -161,13 +207,6 @@ export function ReportDeck(props: { report: Report }) {
         </div>
       )}
 
-      {current ? (
-        <IdeaDrawer
-          open={drawerOpen}
-          onOpenChange={setDrawerOpen}
-          idea={current}
-        />
-      ) : null}
     </main>
   )
 }
