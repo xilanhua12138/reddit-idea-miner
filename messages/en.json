@@ -6,6 +6,9 @@
   "home.subreddit": "Subreddit (optional)",
   "home.subreddit_ph": "e.g. productivity",
   "home.range": "Time range",
+  "range.week": "Week",
+  "range.month": "Month",
+  "range.year": "Year",
   "home.generate": "Generate report",
   "home.generating": "Generating…",
 
@@ -37,6 +40,9 @@
   "tutorial.line2": "Details are shown inside the card",
   "tutorial.gotit": "Got it",
   "tutorial.keys": "Shortcuts: ← Nope, → Like",
+
+  "errors.keyword_required": "Keyword is required.",
+  "errors.generic_fail": "Failed. If you see Reddit 403, try again or switch time range/subreddit.",
 
   "lang.en": "EN",
   "lang.zh": "中文"

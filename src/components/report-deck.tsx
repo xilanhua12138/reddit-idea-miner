@@ -119,12 +119,10 @@ export function ReportDeck(props: { report: Report }) {
         </Card>
       ) : (
         <div className="relative mx-auto mt-6 h-[calc(100vh-260px)] min-h-[540px] max-h-[820px] w-full overflow-hidden">
-          {ideas
-            .map((idea, i) => {
-              if (i < index) return null
-              // Render only the top 2 cards to reduce peeking + improve performance.
-              if (i > index + 1) return null
-
+          {[index + 1, index]
+            .filter((i) => i >= 0 && i < ideas.length)
+            .map((i) => {
+              const idea = ideas[i]
               const isTop = i === index
               const layer = i - index // 0 (top), 1 (next)
 
@@ -220,8 +218,7 @@ export function ReportDeck(props: { report: Report }) {
                   </div>
                 </TinderCard>
               )
-            })
-            .reverse()}
+            })}
         </div>
       )}
     </main>

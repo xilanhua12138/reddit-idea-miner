@@ -6,6 +6,9 @@
   "home.subreddit": "子版块（可选）",
   "home.subreddit_ph": "例如：productivity",
   "home.range": "时间范围",
+  "range.week": "近一周",
+  "range.month": "近一月",
+  "range.year": "近一年",
   "home.generate": "生成报告",
   "home.generating": "生成中…",
 
@@ -37,6 +40,9 @@
   "tutorial.line2": "卡片里直接看详情",
   "tutorial.gotit": "知道了",
   "tutorial.keys": "快捷键：← 不喜欢，→ 喜欢",
+
+  "errors.keyword_required": "关键词不能为空。",
+  "errors.generic_fail": "失败了。如果看到 Reddit 403，建议重试或切换时间范围/子版块。",
 
   "lang.en": "EN",
   "lang.zh": "中文"
