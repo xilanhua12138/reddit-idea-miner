@@ -1,6 +1,6 @@
 "use client"
 
-import { createRef, useEffect, useMemo, useState } from "react"
+import { createRef, useEffect, useMemo, useRef, useState } from "react"
 import TinderCard from "react-tinder-card"
 import type { Idea, Report } from "@/lib/types"
 
@@ -102,10 +102,13 @@ export function ReportDeck(props: { report: Report }) {
     setIndex((i) => i + 1)
   }
 
+  // Keyboard navigation with ref to avoid stale closure issues
+  const canSwipeRef = useRef(true)
+  canSwipeRef.current = !tutorialOpen && !done && index < total
+  
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
-      if (tutorialOpen) return
-      if (done) return
+      if (!canSwipeRef.current) return
 
       if (e.key === "ArrowRight") {
         e.preventDefault()
@@ -118,7 +121,7 @@ export function ReportDeck(props: { report: Report }) {
 
     window.addEventListener("keydown", onKeyDown)
     return () => window.removeEventListener("keydown", onKeyDown)
-  }, [childRefs, done, index, tutorialOpen])
+  }, [childRefs, index])
 
   return (
     <main className="mx-auto min-h-[80vh] max-w-3xl px-4 py-8">
