@@ -118,19 +118,34 @@ export function ReportDeck(props: { report: Report }) {
           </CardContent>
         </Card>
       ) : (
-        <div className="relative mx-auto mt-6 h-[calc(100vh-260px)] min-h-[520px] max-h-[760px] w-full overflow-hidden">
+        <div className="relative mx-auto mt-6 h-[calc(100vh-260px)] min-h-[540px] max-h-[820px] w-full overflow-hidden">
           {ideas
             .map((idea, i) => {
               if (i < index) return null
+              // Render only the top 2 cards to reduce peeking + improve performance.
+              if (i > index + 1) return null
+
+              const isTop = i === index
+              const layer = i - index // 0 (top), 1 (next)
+
               return (
                 <TinderCard
                   ref={childRefs[i]}
                   key={idea.id}
                   onSwipe={(dir) => onSwipe(dir, idea)}
-                  preventSwipe={["up", "down"]}
+                  preventSwipe={isTop ? ["up", "down"] : ["up", "down", "left", "right"]}
                 >
-                  <div className="absolute inset-0 flex items-start justify-center pt-2">
-                    <Card className="h-[600px] w-full max-w-xl select-none shadow-sm">
+                  <div
+                    className={`absolute inset-0 flex items-start justify-center pt-2 ${
+                      isTop ? "pointer-events-auto" : "pointer-events-none"
+                    }`}
+                    style={
+                      layer === 1
+                        ? { transform: "scale(0.97) translateY(10px)", opacity: 0.85 }
+                        : undefined
+                    }
+                  >
+                    <Card className="h-[clamp(560px,70vh,660px)] w-full max-w-xl select-none shadow-sm">
                       <CardHeader>
                         <CardTitle className="text-base">{idea.title}</CardTitle>
                       </CardHeader>

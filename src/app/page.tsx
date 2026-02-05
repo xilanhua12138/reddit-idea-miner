@@ -81,6 +81,9 @@ export default function HomePage() {
             <div>
               <CardTitle className="text-xl">{t("app.name")}</CardTitle>
               <p className="text-sm text-muted-foreground">{t("home.subtitle")}</p>
+              <a className="mt-2 inline-block text-sm underline" href="/library">
+                {t("library.title")}
+              </a>
             </div>
             <LangSwitch />
           </div>
