@@ -21,9 +21,14 @@
   "tabs.build": "构建",
   "tabs.actions": "行动",
   "evidence.source": "来源",
+  "evidence.more": "展开更多",
+  "evidence.less": "收起",
+
+  "nav.home": "返回主页",
 
   "library.title": "我的库",
   "library.subtitle": "保存在你的浏览器本地。",
+  "library.from": "来自",
   "library.liked": "喜欢",
   "library.disliked": "不喜欢",
   "library.empty": "这里还没有内容。",

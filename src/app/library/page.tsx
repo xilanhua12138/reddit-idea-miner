@@ -12,14 +12,15 @@ import { LIBRARY_EVENT } from "@/lib/library-events"
 
 type Tab = "liked" | "disliked"
 
-function EntryCard(props: {
-  entry: LibraryEntry
-  onOpen: () => void
-}) {
+function EntryCard(props: { entry: LibraryEntry; onOpen: () => void }) {
+  const t = useTranslations()
   const { entry } = props
   const idea = entry.idea
   return (
-    <Card className="cursor-pointer hover:shadow-sm transition-shadow" onClick={props.onOpen}>
+    <Card
+      className="cursor-pointer transition-shadow hover:shadow-sm"
+      onClick={props.onOpen}
+    >
       <CardHeader>
         <CardTitle className="text-base">{idea.title}</CardTitle>
       </CardHeader>
@@ -33,7 +34,7 @@ function EntryCard(props: {
           <Badge variant="outline">evidence {idea.quotes.length}</Badge>
         </div>
         <p className="text-xs text-muted-foreground">
-          来自：{entry.query.keyword}
+          {t("library.from")}: {entry.query.keyword}
           {entry.query.subreddit ? ` · r/${entry.query.subreddit}` : ""}
           {` · ${entry.query.range}`}
         </p>
@@ -71,6 +72,9 @@ export default function LibraryPage() {
         <div>
           <h1 className="text-2xl font-semibold">{t("library.title")}</h1>
           <p className="text-sm text-muted-foreground">{t("library.subtitle")}</p>
+          <a className="mt-2 inline-block text-sm underline" href="/">
+            {t("nav.home")}
+          </a>
         </div>
         <LangSwitch />
       </div>

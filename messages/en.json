@@ -21,9 +21,14 @@
   "tabs.build": "Build",
   "tabs.actions": "Actions",
   "evidence.source": "Source",
+  "evidence.more": "Show more",
+  "evidence.less": "Show less",
+
+  "nav.home": "Home",
 
   "library.title": "Library",
   "library.subtitle": "Stored locally in your browser.",
+  "library.from": "From",
   "library.liked": "Liked",
   "library.disliked": "Disliked",
   "library.empty": "Nothing here yet.",

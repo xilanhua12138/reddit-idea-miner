@@ -1,6 +1,5 @@
 "use client"
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { createRef, useEffect, useMemo, useState } from "react"
 import TinderCard from "react-tinder-card"
 import { useTranslations } from "next-intl"
@@ -15,6 +14,13 @@ import {
 } from "@/lib/library-store"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ReportHeader } from "@/components/report-header"
+
+type SwipeDir = "left" | "right"
+
+type TinderCardRef = {
+  swipe: (dir?: SwipeDir) => Promise<void>
+  restoreCard: () => Promise<void>
+}
 
 function TutorialOverlay(props: { open: boolean; onClose: () => void }) {
   const t = useTranslations()
@@ -32,9 +38,7 @@ function TutorialOverlay(props: { open: boolean; onClose: () => void }) {
         >
           {t("tutorial.gotit")}
         </button>
-        <p className="mt-2 text-xs text-muted-foreground">
-          {t("tutorial.keys")}
-        </p>
+        <p className="mt-2 text-xs text-muted-foreground">{t("tutorial.keys")}</p>
       </div>
     </div>
   )
@@ -45,9 +49,9 @@ export function ReportDeck(props: { report: Report }) {
   const t = useTranslations()
 
   const ideas = report.ideas
+  const total = ideas.length
 
   const [index, setIndex] = useState(0)
-
   const [expanded, setExpanded] = useState(false)
   const [tutorialOpen, setTutorialOpen] = useState(false)
 
@@ -55,22 +59,13 @@ export function ReportDeck(props: { report: Report }) {
     setTutorialOpen(!hasSeenTutorial())
   }, [])
 
-  const total = ideas.length
-
   const done = index >= total
 
-  // Inline details: show full content inside the card. Evidence defaults to 3 quotes.
   const defaultEvidenceCount = 3
 
-  const childRefs = useMemo(
-    () => Array.from({ length: ideas.length }, () => createRef<any>()),
-    [ideas.length]
-  )
-
-  const stack = useMemo(() => {
-    // render remaining cards; top card is last
-    return ideas.slice(index)
-  }, [ideas, index])
+  const childRefs = useMemo(() => {
+    return Array.from({ length: ideas.length }, () => createRef<TinderCardRef>())
+  }, [ideas.length])
 
   function onSwipe(dir: string, idea: Idea) {
     if (dir === "right") likeIdea({ report, idea })
@@ -116,87 +111,104 @@ export function ReportDeck(props: { report: Report }) {
             <CardTitle className="text-base">{t("report.done_title")}</CardTitle>
           </CardHeader>
           <CardContent className="text-sm text-muted-foreground">
-            {t("report.done_cta")} <a className="underline" href="/library">{t("library.title")}</a>
+            {t("report.done_cta")} {" "}
+            <a className="underline" href="/library">
+              {t("library.title")}
+            </a>
           </CardContent>
         </Card>
       ) : (
-        <div className="relative mx-auto mt-6 w-full overflow-hidden h-[calc(100vh-260px)] min-h-[520px] max-h-[760px]">
-          {stack
-            .map((idea) => (
-              <TinderCard
-                ref={childRefs[index + stack.indexOf(idea)]}
-                key={idea.id}
-                onSwipe={(dir) => onSwipe(dir, idea)}
-                preventSwipe={["up", "down"]}
-              >
-                <div className="absolute inset-0 flex items-start justify-center pt-2">
-                  <Card className="w-full max-w-xl select-none shadow-sm h-[600px]">
-                    <CardHeader>
-                      <CardTitle className="text-base">{idea.title}</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <p className="text-sm text-muted-foreground">{idea.oneLiner}</p>
+        <div className="relative mx-auto mt-6 h-[calc(100vh-260px)] min-h-[520px] max-h-[760px] w-full overflow-hidden">
+          {ideas
+            .map((idea, i) => {
+              if (i < index) return null
+              return (
+                <TinderCard
+                  ref={childRefs[i]}
+                  key={idea.id}
+                  onSwipe={(dir) => onSwipe(dir, idea)}
+                  preventSwipe={["up", "down"]}
+                >
+                  <div className="absolute inset-0 flex items-start justify-center pt-2">
+                    <Card className="h-[600px] w-full max-w-xl select-none shadow-sm">
+                      <CardHeader>
+                        <CardTitle className="text-base">{idea.title}</CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        <p className="text-sm text-muted-foreground">{idea.oneLiner}</p>
 
-                      <div className="flex flex-wrap gap-2">
-                        <Badge variant="secondary">pain {idea.scores.pain}</Badge>
-                        <Badge variant="secondary">repeat {idea.scores.repeat}</Badge>
-                        <Badge variant="secondary">pay {idea.scores.pay}</Badge>
-                        <Badge>total {idea.scores.total}</Badge>
-                        <Badge variant="outline">evidence {idea.quotes.length}</Badge>
-                      </div>
+                        <div className="flex flex-wrap gap-2">
+                          <Badge variant="secondary">pain {idea.scores.pain}</Badge>
+                          <Badge variant="secondary">repeat {idea.scores.repeat}</Badge>
+                          <Badge variant="secondary">pay {idea.scores.pay}</Badge>
+                          <Badge>total {idea.scores.total}</Badge>
+                          <Badge variant="outline">evidence {idea.quotes.length}</Badge>
+                        </div>
 
-                      <Tabs defaultValue="evidence" className="w-full">
-                        <TabsList>
-                          <TabsTrigger value="evidence">{t("tabs.evidence")}</TabsTrigger>
-                          <TabsTrigger value="insight">{t("tabs.insight")}</TabsTrigger>
-                          <TabsTrigger value="build">{t("tabs.build")}</TabsTrigger>
-                          <TabsTrigger value="actions">{t("tabs.actions")}</TabsTrigger>
-                        </TabsList>
+                        <Tabs defaultValue="evidence" className="w-full">
+                          <TabsList>
+                            <TabsTrigger value="evidence">{t("tabs.evidence")}</TabsTrigger>
+                            <TabsTrigger value="insight">{t("tabs.insight")}</TabsTrigger>
+                            <TabsTrigger value="build">{t("tabs.build")}</TabsTrigger>
+                            <TabsTrigger value="actions">{t("tabs.actions")}</TabsTrigger>
+                          </TabsList>
 
-                        <TabsContent value="evidence" className="space-y-2 max-h-[320px] overflow-y-auto pr-1">
-                          {(expanded ? idea.quotes : idea.quotes.slice(0, defaultEvidenceCount)).map((q, i) => (
-                            <div key={i} className="rounded-md border p-3">
-                              <p className="text-sm">“{q.text}”</p>
-                              <p className="mt-2 text-xs text-muted-foreground">
-                                来源: r/{q.subreddit} · {q.kind} · score {q.score} · u/{q.author}
-                              </p>
-                            </div>
-                          ))}
-                        </TabsContent>
+                          <TabsContent
+                            value="evidence"
+                            className="max-h-[320px] space-y-2 overflow-y-auto pr-1"
+                          >
+                            {(expanded
+                              ? idea.quotes
+                              : idea.quotes.slice(0, defaultEvidenceCount)
+                            ).map((q, qi) => (
+                              <div key={qi} className="rounded-md border p-3">
+                                <p className="text-sm">“{q.text}”</p>
+                                <p className="mt-2 text-xs text-muted-foreground">
+                                  {t("evidence.source")}: r/{q.subreddit} · {q.kind} · score {q.score} · u/{q.author}
+                                </p>
+                              </div>
+                            ))}
+                          </TabsContent>
 
-                        <TabsContent value="insight">
-                          <p className="text-sm text-muted-foreground whitespace-pre-wrap">{idea.insight}</p>
-                        </TabsContent>
+                          <TabsContent value="insight">
+                            <p className="whitespace-pre-wrap text-sm text-muted-foreground">
+                              {idea.insight}
+                            </p>
+                          </TabsContent>
 
-                        <TabsContent value="build">
-                          <p className="text-sm text-muted-foreground whitespace-pre-wrap">{idea.build}</p>
-                        </TabsContent>
+                          <TabsContent value="build">
+                            <p className="whitespace-pre-wrap text-sm text-muted-foreground">
+                              {idea.build}
+                            </p>
+                          </TabsContent>
 
-                        <TabsContent value="actions">
-                          <p className="text-sm text-muted-foreground whitespace-pre-wrap">{idea.actions}</p>
-                        </TabsContent>
-                      </Tabs>
+                          <TabsContent value="actions">
+                            <p className="whitespace-pre-wrap text-sm text-muted-foreground">
+                              {idea.actions}
+                            </p>
+                          </TabsContent>
+                        </Tabs>
 
-                      {idea.quotes.length > defaultEvidenceCount ? (
-                        <button
-                          type="button"
-                          className="text-xs text-muted-foreground underline"
-                          onClick={() => setExpanded((v) => !v)}
-                        >
-                          {expanded ? "收起" : "展开更多"}
-                        </button>
-                      ) : null}
+                        {idea.quotes.length > defaultEvidenceCount ? (
+                          <button
+                            type="button"
+                            className="text-xs text-muted-foreground underline"
+                            onClick={() => setExpanded((v) => !v)}
+                          >
+                            {expanded ? t("evidence.less") : t("evidence.more")}
+                          </button>
+                        ) : null}
 
-                      <p className="text-xs text-muted-foreground">{t("report.hint")}</p>
-                    </CardContent>
-                  </Card>
-                </div>
-              </TinderCard>
-            ))
+                        <p className="text-xs text-muted-foreground">{t("report.hint")}</p>
+                      </CardContent>
+                    </Card>
+                  </div>
+                </TinderCard>
+              )
+            })
             .reverse()}
         </div>
       )}
-
     </main>
   )
 }
