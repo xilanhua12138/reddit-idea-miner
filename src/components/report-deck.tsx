@@ -2,7 +2,6 @@
 
 import { createRef, useEffect, useMemo, useState } from "react"
 import TinderCard from "react-tinder-card"
-import { useTranslations } from "next-intl"
 import type { Idea, Report } from "@/lib/types"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -22,23 +21,40 @@ type TinderCardRef = {
   restoreCard: () => Promise<void>
 }
 
+const labels = {
+  tutorialLine1: "Swipe right to Like · left to Nope",
+  tutorialLine2: "Details are shown inside the card",
+  tutorialGotit: "Got it",
+  tutorialKeys: "Shortcuts: ← Nope, → Like",
+  doneTitle: "All done",
+  doneCta: "You've swiped them all. Go to Library to review.",
+  tabsEvidence: "Evidence",
+  tabsInsight: "Insight",
+  tabsBuild: "Build",
+  tabsActions: "Actions",
+  evidenceSource: "Source",
+  evidenceMore: "Show more",
+  evidenceLess: "Show less",
+  reportHint: "Swipe left to Nope, right to Like (←/→).",
+  libraryTitle: "Library",
+}
+
 function TutorialOverlay(props: { open: boolean; onClose: () => void }) {
-  const t = useTranslations()
   if (!props.open) return null
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/60 backdrop-blur-sm">
       <div className="w-[92vw] max-w-sm rounded-xl border bg-background p-5 shadow-lg">
         <div className="space-y-2">
-          <p className="text-sm font-medium">{t("tutorial.line1")}</p>
-          <p className="text-sm text-muted-foreground">{t("tutorial.line2")}</p>
+          <p className="text-sm font-medium">{labels.tutorialLine1}</p>
+          <p className="text-sm text-muted-foreground">{labels.tutorialLine2}</p>
         </div>
         <button
           className="mt-4 w-full rounded-md bg-foreground px-4 py-2 text-sm font-medium text-background"
           onClick={props.onClose}
         >
-          {t("tutorial.gotit")}
+          {labels.tutorialGotit}
         </button>
-        <p className="mt-2 text-xs text-muted-foreground">{t("tutorial.keys")}</p>
+        <p className="mt-2 text-xs text-muted-foreground">{labels.tutorialKeys}</p>
       </div>
     </div>
   )
@@ -46,7 +62,6 @@ function TutorialOverlay(props: { open: boolean; onClose: () => void }) {
 
 export function ReportDeck(props: { report: Report }) {
   const { report } = props
-  const t = useTranslations()
 
   const ideas = report.ideas
   const total = ideas.length
@@ -108,12 +123,12 @@ export function ReportDeck(props: { report: Report }) {
       {done ? (
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">{t("report.done_title")}</CardTitle>
+            <CardTitle className="text-base">{labels.doneTitle}</CardTitle>
           </CardHeader>
           <CardContent className="text-sm text-muted-foreground">
-            {t("report.done_cta")} {" "}
+            {labels.doneCta} {" "}
             <a className="underline" href="/library">
-              {t("library.title")}
+              {labels.libraryTitle}
             </a>
           </CardContent>
         </Card>
@@ -160,10 +175,10 @@ export function ReportDeck(props: { report: Report }) {
 
                         <Tabs defaultValue="evidence" className="w-full">
                           <TabsList>
-                            <TabsTrigger value="evidence">{t("tabs.evidence")}</TabsTrigger>
-                            <TabsTrigger value="insight">{t("tabs.insight")}</TabsTrigger>
-                            <TabsTrigger value="build">{t("tabs.build")}</TabsTrigger>
-                            <TabsTrigger value="actions">{t("tabs.actions")}</TabsTrigger>
+                            <TabsTrigger value="evidence">{labels.tabsEvidence}</TabsTrigger>
+                            <TabsTrigger value="insight">{labels.tabsInsight}</TabsTrigger>
+                            <TabsTrigger value="build">{labels.tabsBuild}</TabsTrigger>
+                            <TabsTrigger value="actions">{labels.tabsActions}</TabsTrigger>
                           </TabsList>
 
                           <TabsContent
@@ -175,9 +190,9 @@ export function ReportDeck(props: { report: Report }) {
                               : idea.quotes.slice(0, defaultEvidenceCount)
                             ).map((q, qi) => (
                               <div key={qi} className="rounded-md border p-3">
-                                <p className="text-sm">“{q.text}”</p>
+                                <p className="text-sm">&quot;{q.text}&quot;</p>
                                 <p className="mt-2 text-xs text-muted-foreground">
-                                  {t("evidence.source")}: r/{q.subreddit} · {q.kind} · score {q.score} · u/{q.author}
+                                  {labels.evidenceSource}: r/{q.subreddit} · {q.kind} · score {q.score} · u/{q.author}
                                 </p>
                               </div>
                             ))}
@@ -208,11 +223,11 @@ export function ReportDeck(props: { report: Report }) {
                             className="text-xs text-muted-foreground underline"
                             onClick={() => setExpanded((v) => !v)}
                           >
-                            {expanded ? t("evidence.less") : t("evidence.more")}
+                            {expanded ? labels.evidenceLess : labels.evidenceMore}
                           </button>
                         ) : null}
 
-                        <p className="text-xs text-muted-foreground">{t("report.hint")}</p>
+                        <p className="text-xs text-muted-foreground">{labels.reportHint}</p>
                       </CardContent>
                     </Card>
                   </div>
