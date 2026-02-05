@@ -3,6 +3,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createRef, useEffect, useMemo, useState } from "react"
 import TinderCard from "react-tinder-card"
+import { useTranslations } from "next-intl"
 import type { Idea, Report } from "@/lib/types"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -13,24 +14,26 @@ import {
   markTutorialSeen,
 } from "@/lib/library-store"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { ReportHeader } from "@/components/report-header"
 
 function TutorialOverlay(props: { open: boolean; onClose: () => void }) {
+  const t = useTranslations()
   if (!props.open) return null
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/60 backdrop-blur-sm">
       <div className="w-[92vw] max-w-sm rounded-xl border bg-background p-5 shadow-lg">
         <div className="space-y-2">
-          <p className="text-sm font-medium">右滑喜欢 · 左滑不喜欢</p>
-          <p className="text-sm text-muted-foreground">卡片里直接看详情</p>
+          <p className="text-sm font-medium">{t("tutorial.line1")}</p>
+          <p className="text-sm text-muted-foreground">{t("tutorial.line2")}</p>
         </div>
         <button
           className="mt-4 w-full rounded-md bg-foreground px-4 py-2 text-sm font-medium text-background"
           onClick={props.onClose}
         >
-          知道了
+          {t("tutorial.gotit")}
         </button>
         <p className="mt-2 text-xs text-muted-foreground">
-          快捷键：← 不喜欢，→ 喜欢
+          {t("tutorial.keys")}
         </p>
       </div>
     </div>
@@ -39,6 +42,7 @@ function TutorialOverlay(props: { open: boolean; onClose: () => void }) {
 
 export function ReportDeck(props: { report: Report }) {
   const { report } = props
+  const t = useTranslations()
 
   const ideas = report.ideas
 
@@ -104,29 +108,15 @@ export function ReportDeck(props: { report: Report }) {
         }}
       />
 
-      <div className="mb-2">
-        <h1 className="text-2xl font-semibold">Reddit Idea Miner</h1>
-        <p className="text-sm text-muted-foreground">
-          关键词：<span className="font-medium text-foreground">{report.query.keyword}</span>
-          {report.query.subreddit ? (
-            <>
-              {" "}· 子版块：<span className="font-medium text-foreground">r/{report.query.subreddit}</span>
-            </>
-          ) : null}
-          {" "}· 时间范围：<span className="font-medium text-foreground">{report.query.range}</span>
-        </p>
-        <p className="mt-1 text-xs text-muted-foreground">
-          {Math.min(index + 1, total)}/{total}
-        </p>
-      </div>
+      <ReportHeader report={report} index={index} total={total} />
 
       {done ? (
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">已完成</CardTitle>
+            <CardTitle className="text-base">{t("report.done_title")}</CardTitle>
           </CardHeader>
           <CardContent className="text-sm text-muted-foreground">
-            已经全部滑完。去 <a className="underline" href="/library">我的库</a> 查看喜欢/不喜欢。
+            {t("report.done_cta")} <a className="underline" href="/library">{t("library.title")}</a>
           </CardContent>
         </Card>
       ) : (
@@ -157,10 +147,10 @@ export function ReportDeck(props: { report: Report }) {
 
                       <Tabs defaultValue="evidence" className="w-full">
                         <TabsList>
-                          <TabsTrigger value="evidence">证据</TabsTrigger>
-                          <TabsTrigger value="insight">洞察</TabsTrigger>
-                          <TabsTrigger value="build">构建</TabsTrigger>
-                          <TabsTrigger value="actions">行动</TabsTrigger>
+                          <TabsTrigger value="evidence">{t("tabs.evidence")}</TabsTrigger>
+                          <TabsTrigger value="insight">{t("tabs.insight")}</TabsTrigger>
+                          <TabsTrigger value="build">{t("tabs.build")}</TabsTrigger>
+                          <TabsTrigger value="actions">{t("tabs.actions")}</TabsTrigger>
                         </TabsList>
 
                         <TabsContent value="evidence" className="space-y-2 max-h-[320px] overflow-y-auto pr-1">
@@ -197,9 +187,7 @@ export function ReportDeck(props: { report: Report }) {
                         </button>
                       ) : null}
 
-                      <p className="text-xs text-muted-foreground">
-                        左滑不喜欢 · 右滑喜欢 · （←/→）快捷键
-                      </p>
+                      <p className="text-xs text-muted-foreground">{t("report.hint")}</p>
                     </CardContent>
                   </Card>
                 </div>

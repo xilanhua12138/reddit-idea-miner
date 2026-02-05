@@ -6,10 +6,13 @@ import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { useTranslations } from "next-intl"
+import { LangSwitch } from "@/components/lang-switch"
 
 type Range = "week" | "month" | "year"
 
 export default function HomePage() {
+  const t = useTranslations()
   const router = useRouter()
   const [keyword, setKeyword] = useState("")
   const [subreddit, setSubreddit] = useState("")
@@ -74,32 +77,35 @@ export default function HomePage() {
     <main className="mx-auto flex min-h-[80vh] max-w-3xl items-center px-4 py-10">
       <Card className="w-full">
         <CardHeader>
-          <CardTitle className="text-xl">Reddit Idea Miner</CardTitle>
-          <p className="text-sm text-muted-foreground">
-            基于真实 Reddit 讨论，生成 10 个可核验的产品点子。
-          </p>
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <CardTitle className="text-xl">{t("app.name")}</CardTitle>
+              <p className="text-sm text-muted-foreground">{t("home.subtitle")}</p>
+            </div>
+            <LangSwitch />
+          </div>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <label className="text-sm font-medium">关键词 *</label>
+            <label className="text-sm font-medium">{t("home.keyword")}</label>
             <Input
               value={keyword}
               onChange={(e) => setKeyword(e.target.value)}
-              placeholder="例如：table of contents"
+              placeholder={t("home.keyword_ph")}
             />
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium">子版块（可选）</label>
+            <label className="text-sm font-medium">{t("home.subreddit")}</label>
             <Input
               value={subreddit}
               onChange={(e) => setSubreddit(e.target.value)}
-              placeholder="例如：productivity"
+              placeholder={t("home.subreddit_ph")}
             />
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium">时间范围</label>
+            <label className="text-sm font-medium">{t("home.range")}</label>
             <div className="flex gap-2">
               {(["week", "month", "year"] as Range[]).map((r) => (
                 <button
@@ -121,7 +127,7 @@ export default function HomePage() {
           {error ? <p className="text-sm text-red-600">{error}</p> : null}
 
           <Button onClick={onGenerate} disabled={loading} className="w-full">
-            {loading ? "生成中…" : "生成报告"}
+            {loading ? t("home.generating") : t("home.generate")}
           </Button>
         </CardContent>
       </Card>

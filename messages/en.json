@@ -1,0 +1,38 @@
+{
+  "app.name": "Reddit Idea Miner",
+  "home.subtitle": "Generate 10 evidence-backed product ideas from real Reddit JSON.",
+  "home.keyword": "Keyword *",
+  "home.keyword_ph": "e.g. table of contents",
+  "home.subreddit": "Subreddit (optional)",
+  "home.subreddit_ph": "e.g. productivity",
+  "home.range": "Time range",
+  "home.generate": "Generate report",
+  "home.generating": "Generating…",
+
+  "report.keyword": "Keyword",
+  "report.subreddit": "Subreddit",
+  "report.range": "Time range",
+  "report.done_title": "All done",
+  "report.done_cta": "You’ve swiped them all. Go to Library to review.",
+  "report.hint": "Swipe left to Nope, right to Like (←/→).",
+
+  "tabs.evidence": "Evidence",
+  "tabs.insight": "Insight",
+  "tabs.build": "Build",
+  "tabs.actions": "Actions",
+  "evidence.source": "Source",
+
+  "library.title": "Library",
+  "library.subtitle": "Stored locally in your browser.",
+  "library.liked": "Liked",
+  "library.disliked": "Disliked",
+  "library.empty": "Nothing here yet.",
+
+  "tutorial.line1": "Swipe right to Like · left to Nope",
+  "tutorial.line2": "Details are shown inside the card",
+  "tutorial.gotit": "Got it",
+  "tutorial.keys": "Shortcuts: ← Nope, → Like",
+
+  "lang.en": "EN",
+  "lang.zh": "中文"
+}

@@ -1,0 +1,38 @@
+{
+  "app.name": "Reddit Idea Miner",
+  "home.subtitle": "基于真实 Reddit 讨论，生成 10 个可核验的产品点子。",
+  "home.keyword": "关键词 *",
+  "home.keyword_ph": "例如：table of contents",
+  "home.subreddit": "子版块（可选）",
+  "home.subreddit_ph": "例如：productivity",
+  "home.range": "时间范围",
+  "home.generate": "生成报告",
+  "home.generating": "生成中…",
+
+  "report.keyword": "关键词",
+  "report.subreddit": "子版块",
+  "report.range": "时间范围",
+  "report.done_title": "已完成",
+  "report.done_cta": "已经全部滑完。去我的库查看喜欢/不喜欢。",
+  "report.hint": "左滑不喜欢，右滑喜欢（←/→）。",
+
+  "tabs.evidence": "证据",
+  "tabs.insight": "洞察",
+  "tabs.build": "构建",
+  "tabs.actions": "行动",
+  "evidence.source": "来源",
+
+  "library.title": "我的库",
+  "library.subtitle": "保存在你的浏览器本地。",
+  "library.liked": "喜欢",
+  "library.disliked": "不喜欢",
+  "library.empty": "这里还没有内容。",
+
+  "tutorial.line1": "右滑喜欢 · 左滑不喜欢",
+  "tutorial.line2": "卡片里直接看详情",
+  "tutorial.gotit": "知道了",
+  "tutorial.keys": "快捷键：← 不喜欢，→ 喜欢",
+
+  "lang.en": "EN",
+  "lang.zh": "中文"
+}

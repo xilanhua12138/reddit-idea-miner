@@ -4,6 +4,8 @@ import { useEffect, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
+import { useTranslations } from "next-intl"
+import { LangSwitch } from "@/components/lang-switch"
 import { IdeaDrawer } from "@/components/idea-drawer"
 import { loadLibrary, type LibraryEntry, type LibraryState } from "@/lib/library-store"
 import { LIBRARY_EVENT } from "@/lib/library-events"
@@ -41,6 +43,7 @@ function EntryCard(props: {
 }
 
 export default function LibraryPage() {
+  const t = useTranslations()
   const [tab, setTab] = useState<Tab>("liked")
   const [openIdea, setOpenIdea] = useState<LibraryEntry | null>(null)
 
@@ -64,9 +67,12 @@ export default function LibraryPage() {
 
   return (
     <main className="mx-auto max-w-5xl px-4 py-8">
-      <div className="mb-6">
-        <h1 className="text-2xl font-semibold">我的库</h1>
-        <p className="text-sm text-muted-foreground">保存在你的浏览器本地。</p>
+      <div className="mb-6 flex items-start justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-semibold">{t("library.title")}</h1>
+          <p className="text-sm text-muted-foreground">{t("library.subtitle")}</p>
+        </div>
+        <LangSwitch />
       </div>
 
       <div className="mb-4 flex gap-2">
@@ -74,20 +80,20 @@ export default function LibraryPage() {
           className={`rounded-md border px-3 py-2 text-sm ${tab === "liked" ? "bg-foreground text-background" : "bg-background"}`}
           onClick={() => setTab("liked")}
         >
-          喜欢 ({state.liked.length})
+          {t("library.liked")} ({state.liked.length})
         </button>
         <button
           className={`rounded-md border px-3 py-2 text-sm ${tab === "disliked" ? "bg-foreground text-background" : "bg-background"}`}
           onClick={() => setTab("disliked")}
         >
-          不喜欢 ({state.disliked.length})
+          {t("library.disliked")} ({state.disliked.length})
         </button>
       </div>
 
       <Separator className="mb-4" />
 
       {list.length === 0 ? (
-        <p className="text-sm text-muted-foreground">这里还没有内容。</p>
+        <p className="text-sm text-muted-foreground">{t("library.empty")}</p>
       ) : (
         <div className="grid gap-4 md:grid-cols-2">
           {list.map((entry) => (
