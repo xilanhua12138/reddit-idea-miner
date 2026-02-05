@@ -142,13 +142,17 @@ export function ReportDeck(props: { report: Report }) {
                     style={
                       layer === 1
                         ? {
-                            transform: "scale(0.97) translateY(10px)",
-                            opacity: 0.85,
+                            transform:
+                              "translateY(22px) translateX(10px) rotate(-2.5deg) scale(0.98)",
+                            opacity: 0.9,
+                            filter: "saturate(0.95)",
                           }
                         : undefined
                     }
                   >
-                    <Card className="h-[clamp(560px,70vh,660px)] w-full max-w-xl select-none shadow-sm">
+                    <Card className={`h-[clamp(560px,70vh,660px)] w-full max-w-xl select-none shadow-sm ${
+                      isTop ? "" : "shadow-md"
+                    }`}>
                       <CardHeader>
                         <CardTitle className="text-base">{idea.title}</CardTitle>
                       </CardHeader>
