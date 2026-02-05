@@ -27,18 +27,45 @@ export default function HomePage() {
 
     setLoading(true)
     try {
-      const res = await fetch("/api/report/generate", {
+      // Client-side Reddit fetch (avoids Vercel serverless IP 403 blocks)
+      const { redditTryBases, buildSearchUrl, buildCommentsUrl } = await import(
+        "@/lib/client-reddit"
+      )
+      const { generateReportClient } = await import("@/lib/generate-client")
+
+      const report = await generateReportClient({
+        keyword,
+        subreddit: subreddit.trim() || undefined,
+        range,
+        fetchSearch: () =>
+          redditTryBases((base) =>
+            buildSearchUrl(base, {
+              keyword,
+              subreddit: subreddit.trim() || undefined,
+              range,
+              limit: 50,
+            })
+          ),
+        fetchComments: (postId) =>
+          redditTryBases((base) => buildCommentsUrl(base, postId)),
+      })
+
+      // Save to Supabase via server (service role key stays server-only)
+      const res = await fetch("/api/report/save", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ keyword, subreddit, range }),
+        body: JSON.stringify({ report }),
       })
 
       const data = await res.json().catch(() => ({}))
-      if (!res.ok) throw new Error(data?.error || `Request failed (${res.status})`)
+      if (!res.ok) throw new Error(data?.error || `Save failed (${res.status})`)
 
       router.push(`/r/${data.reportId}`)
     } catch (e: any) {
-      setError(e?.message || "Failed")
+      setError(
+        e?.message ||
+          "Failed. If you see Reddit 403, try again or switch time range/subreddit."
+      )
     } finally {
       setLoading(false)
     }
