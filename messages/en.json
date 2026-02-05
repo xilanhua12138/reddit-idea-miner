@@ -2,7 +2,7 @@
   "app.name": "Reddit Idea Miner",
   "home.subtitle": "Generate 10 evidence-backed product ideas from real Reddit JSON.",
   "home.keyword": "Keyword *",
-  "home.keyword_ph": "e.g. table of contents",
+  "home.keyword_ph": "e.g. habit tracker",
   "home.subreddit": "Subreddit (optional)",
   "home.subreddit_ph": "e.g. productivity",
   "home.range": "Time range",

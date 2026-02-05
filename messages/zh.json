@@ -2,7 +2,7 @@
   "app.name": "Reddit Idea Miner",
   "home.subtitle": "基于真实 Reddit 讨论，生成 10 个可核验的产品点子。",
   "home.keyword": "关键词 *",
-  "home.keyword_ph": "例如：table of contents",
+  "home.keyword_ph": "例如：习惯打卡",
   "home.subreddit": "子版块（可选）",
   "home.subreddit_ph": "例如：productivity",
   "home.range": "时间范围",
