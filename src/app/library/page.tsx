@@ -1,11 +1,12 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useEffect, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { IdeaDrawer } from "@/components/idea-drawer"
-import { loadLibrary, type LibraryEntry } from "@/lib/library-store"
+import { loadLibrary, type LibraryEntry, type LibraryState } from "@/lib/library-store"
+import { LIBRARY_EVENT } from "@/lib/library-events"
 
 type Tab = "liked" | "disliked"
 
@@ -43,7 +44,22 @@ export default function LibraryPage() {
   const [tab, setTab] = useState<Tab>("liked")
   const [openIdea, setOpenIdea] = useState<LibraryEntry | null>(null)
 
-  const state = useMemo(() => loadLibrary(), [])
+  const [state, setState] = useState<LibraryState>(() => loadLibrary())
+
+  useEffect(() => {
+    function refresh() {
+      setState(loadLibrary())
+    }
+
+    refresh()
+    window.addEventListener("storage", refresh)
+    window.addEventListener(LIBRARY_EVENT, refresh)
+    return () => {
+      window.removeEventListener("storage", refresh)
+      window.removeEventListener(LIBRARY_EVENT, refresh)
+    }
+  }, [])
+
   const list = tab === "liked" ? state.liked : state.disliked
 
   return (

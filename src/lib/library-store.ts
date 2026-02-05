@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import type { Idea, Report } from "@/lib/types"
+import { emitLibraryUpdate } from "@/lib/library-events"
 
 export type LibraryEntry = {
   reportId: string
@@ -32,17 +33,22 @@ function safeParse(json: string | null): LibraryState | null {
 
 export function loadLibrary(): LibraryState {
   if (typeof window === "undefined") return { liked: [], disliked: [] }
-  return safeParse(window.localStorage.getItem(KEY)) || { liked: [], disliked: [] }
+  return (
+    safeParse(window.localStorage.getItem(KEY)) || { liked: [], disliked: [] }
+  )
 }
 
 export function saveLibrary(state: LibraryState) {
   if (typeof window === "undefined") return
   window.localStorage.setItem(KEY, JSON.stringify(state))
+  emitLibraryUpdate()
 }
 
 export function upsertEntry(list: LibraryEntry[], entry: LibraryEntry): LibraryEntry[] {
   // uniqueness: (reportId + idea.id)
-  const idx = list.findIndex((x) => x.reportId === entry.reportId && x.idea.id === entry.idea.id)
+  const idx = list.findIndex(
+    (x) => x.reportId === entry.reportId && x.idea.id === entry.idea.id
+  )
   if (idx >= 0) {
     const copy = list.slice()
     copy[idx] = entry
