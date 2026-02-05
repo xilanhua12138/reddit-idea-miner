@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 
 type Range = "week" | "month" | "year"
 
@@ -27,7 +26,7 @@ export default function HomePage() {
 
     setLoading(true)
     try {
-      // Client-side Reddit fetch (avoids Vercel serverless IP 403 blocks)
+      // Client-side Reddit fetch (avoids some serverless IP 403 blocks)
       const { redditTryBases, buildSearchUrl, buildCommentsUrl } = await import(
         "@/lib/client-reddit"
       )
@@ -83,12 +82,20 @@ export default function HomePage() {
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <label className="text-sm font-medium">Keyword *</label>
-            <Input value={keyword} onChange={(e) => setKeyword(e.target.value)} placeholder="e.g. table of contents" />
+            <Input
+              value={keyword}
+              onChange={(e) => setKeyword(e.target.value)}
+              placeholder="e.g. table of contents"
+            />
           </div>
 
           <div className="space-y-2">
             <label className="text-sm font-medium">Subreddit (optional)</label>
-            <Input value={subreddit} onChange={(e) => setSubreddit(e.target.value)} placeholder="e.g. productivity" />
+            <Input
+              value={subreddit}
+              onChange={(e) => setSubreddit(e.target.value)}
+              placeholder="e.g. productivity"
+            />
           </div>
 
           <div className="space-y-2">
@@ -99,16 +106,15 @@ export default function HomePage() {
                   key={r}
                   type="button"
                   onClick={() => setRange(r)}
-                  className={`rounded-md border px-3 py-2 text-sm transition-colors ${range === r ? "bg-foreground text-background" : "bg-background"}`}
+                  className={`rounded-md border px-3 py-2 text-sm transition-colors ${
+                    range === r
+                      ? "bg-foreground text-background"
+                      : "bg-background"
+                  }`}
                 >
                   {r}
                 </button>
               ))}
-            </div>
-            <div className="flex gap-2 text-xs text-muted-foreground">
-              <Badge variant="outline">no auth</Badge>
-              <Badge variant="outline">verifiable quotes</Badge>
-              <Badge variant="outline">supabase storage</Badge>
             </div>
           </div>
 
