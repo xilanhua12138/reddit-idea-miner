@@ -3,6 +3,33 @@
 import { createRef, useEffect, useMemo, useState } from "react"
 import TinderCard from "react-tinder-card"
 import type { Idea, Report } from "@/lib/types"
+
+function hashSeed(input: string) {
+  // Simple deterministic hash → uint32
+  let h = 2166136261
+  for (let i = 0; i < input.length; i++) {
+    h ^= input.charCodeAt(i)
+    h = Math.imul(h, 16777619)
+  }
+  return h >>> 0
+}
+
+function mulberry32(seed: number) {
+  return function () {
+    let t = (seed += 0x6d2b79f5)
+    t = Math.imul(t ^ (t >>> 15), t | 1)
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61)
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296
+  }
+}
+
+function stackJitter(key: string, layer: number) {
+  // Keep jitter tiny + stable to feel like a poker stack, not "misaligned UI".
+  const rnd = mulberry32(hashSeed(`${key}:${layer}`))
+  const rot = (rnd() * 2 - 1) * (layer === 1 ? 0.9 : 1.4) // degrees
+  const x = (rnd() * 2 - 1) * (layer === 1 ? 6 : 10) // px
+  return { rot, x }
+}
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import {
@@ -119,12 +146,13 @@ export function ReportDeck(props: { report: Report }) {
         </Card>
       ) : (
         <div className="relative mx-auto mt-6 h-[calc(100vh-260px)] min-h-[540px] max-h-[820px] w-full overflow-hidden">
-          {[index + 1, index]
+          {[index + 2, index + 1, index]
             .filter((i) => i >= 0 && i < ideas.length)
             .map((i) => {
               const idea = ideas[i]
               const isTop = i === index
-              const layer = i - index // 0 (top), 1 (next)
+              const layer = i - index // 0 (top), 1, 2
+              const { rot, x } = layer > 0 ? stackJitter(idea.id, layer) : { rot: 0, x: 0 }
 
               return (
                 <TinderCard
@@ -142,10 +170,13 @@ export function ReportDeck(props: { report: Report }) {
                     style={
                       layer === 1
                         ? {
-                            transform:
-                              "translateY(22px) translateX(10px) rotate(-2.5deg) scale(0.98)",
-                            opacity: 0.9,
-                            filter: "saturate(0.95)",
+                            transform: `translateY(18px) translateX(${x}px) rotate(${rot}deg) scale(0.985)`,
+                            opacity: 0.92,
+                          }
+                        : layer === 2
+                        ? {
+                            transform: `translateY(34px) translateX(${x}px) rotate(${rot}deg) scale(0.97)`,
+                            opacity: 0.86,
                           }
                         : undefined
                     }
