@@ -6,29 +6,12 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { LangSwitch } from "@/components/lang-switch"
+import { useT } from "@/components/locale-provider"
 
 type Range = "week" | "month" | "year"
 
-type Labels = {
-  appName: string
-  subtitle: string
-  libraryTitle: string
-  keyword: string
-  keywordPh: string
-  subreddit: string
-  subredditPh: string
-  range: string
-  rangeWeek: string
-  rangeMonth: string
-  rangeYear: string
-  generate: string
-  generating: string
-  keywordRequired: string
-  genericFail: string
-}
-
-export function HomeClient(props: { labels: Labels }) {
-  const { labels } = props
+export function HomeClient() {
+  const t = useT()
   const router = useRouter()
 
   const [keyword, setKeyword] = useState("")
@@ -40,13 +23,12 @@ export function HomeClient(props: { labels: Labels }) {
   async function onGenerate() {
     setError(null)
     if (!keyword.trim()) {
-      setError(labels.keywordRequired)
+      setError(t("errors.keyword_required"))
       return
     }
 
     setLoading(true)
     try {
-      // Client-side Reddit fetch (avoids some serverless IP 403 blocks)
       const { redditTryBases, buildSearchUrl, buildCommentsUrl } = await import(
         "@/lib/client-reddit"
       )
@@ -65,7 +47,8 @@ export function HomeClient(props: { labels: Labels }) {
               limit: 50,
             })
           ),
-        fetchComments: (postId) => redditTryBases((base) => buildCommentsUrl(base, postId)),
+        fetchComments: (postId) =>
+          redditTryBases((base) => buildCommentsUrl(base, postId)),
       })
 
       const res = await fetch("/api/report/save", {
@@ -80,16 +63,16 @@ export function HomeClient(props: { labels: Labels }) {
       router.push(`/r/${data.reportId}`)
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : null
-      setError(msg || labels.genericFail)
+      setError(msg || t("errors.generic_fail"))
     } finally {
       setLoading(false)
     }
   }
 
   const rangeLabel: Record<Range, string> = {
-    week: labels.rangeWeek,
-    month: labels.rangeMonth,
-    year: labels.rangeYear,
+    week: t("range.week"),
+    month: t("range.month"),
+    year: t("range.year"),
   }
 
   return (
@@ -98,10 +81,10 @@ export function HomeClient(props: { labels: Labels }) {
         <CardHeader>
           <div className="flex items-start justify-between gap-3">
             <div>
-              <CardTitle className="text-xl">{labels.appName}</CardTitle>
-              <p className="text-sm text-muted-foreground">{labels.subtitle}</p>
+              <CardTitle className="text-xl">{t("app.name")}</CardTitle>
+              <p className="text-sm text-muted-foreground">{t("home.subtitle")}</p>
               <a className="mt-2 inline-block text-sm underline" href="/library">
-                {labels.libraryTitle}
+                {t("library.title")}
               </a>
             </div>
             <LangSwitch />
@@ -109,21 +92,25 @@ export function HomeClient(props: { labels: Labels }) {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <label className="text-sm font-medium">{labels.keyword}</label>
-            <Input value={keyword} onChange={(e) => setKeyword(e.target.value)} placeholder={labels.keywordPh} />
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-sm font-medium">{labels.subreddit}</label>
+            <label className="text-sm font-medium">{t("home.keyword")}</label>
             <Input
-              value={subreddit}
-              onChange={(e) => setSubreddit(e.target.value)}
-              placeholder={labels.subredditPh}
+              value={keyword}
+              onChange={(e) => setKeyword(e.target.value)}
+              placeholder={t("home.keyword_ph")}
             />
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium">{labels.range}</label>
+            <label className="text-sm font-medium">{t("home.subreddit")}</label>
+            <Input
+              value={subreddit}
+              onChange={(e) => setSubreddit(e.target.value)}
+              placeholder={t("home.subreddit_ph")}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium">{t("home.range")}</label>
             <div className="flex gap-2">
               {(["week", "month", "year"] as Range[]).map((r) => (
                 <button
@@ -143,7 +130,7 @@ export function HomeClient(props: { labels: Labels }) {
           {error ? <p className="text-sm text-red-600">{error}</p> : null}
 
           <Button onClick={onGenerate} disabled={loading} className="w-full">
-            {loading ? labels.generating : labels.generate}
+            {loading ? t("home.generating") : t("home.generate")}
           </Button>
         </CardContent>
       </Card>

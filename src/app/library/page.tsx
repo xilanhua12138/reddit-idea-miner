@@ -6,29 +6,22 @@ import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { LangSwitch } from "@/components/lang-switch"
 import { IdeaDrawer } from "@/components/idea-drawer"
-import { loadLibrary, type LibraryEntry, type LibraryState } from "@/lib/library-store"
+import {
+  loadLibrary,
+  type LibraryEntry,
+  type LibraryState,
+} from "@/lib/library-store"
 import { LIBRARY_EVENT } from "@/lib/library-events"
-
-const labels = {
-  title: "Library",
-  subtitle: "Stored locally in your browser.",
-  navHome: "Home",
-  liked: "Liked",
-  disliked: "Disliked",
-  empty: "Nothing here yet.",
-  from: "From",
-}
+import { useT } from "@/components/locale-provider"
 
 type Tab = "liked" | "disliked"
 
 function EntryCard(props: { entry: LibraryEntry; onOpen: () => void }) {
+  const t = useT()
   const { entry } = props
   const idea = entry.idea
   return (
-    <Card
-      className="cursor-pointer transition-shadow hover:shadow-sm"
-      onClick={props.onOpen}
-    >
+    <Card className="cursor-pointer transition-shadow hover:shadow-sm" onClick={props.onOpen}>
       <CardHeader>
         <CardTitle className="text-base">{idea.title}</CardTitle>
       </CardHeader>
@@ -42,7 +35,7 @@ function EntryCard(props: { entry: LibraryEntry; onOpen: () => void }) {
           <Badge variant="outline">evidence {idea.quotes.length}</Badge>
         </div>
         <p className="text-xs text-muted-foreground">
-          {labels.from}: {entry.query.keyword}
+          {t("library.from")}: {entry.query.keyword}
           {entry.query.subreddit ? ` · r/${entry.query.subreddit}` : ""}
           {` · ${entry.query.range}`}
         </p>
@@ -52,9 +45,9 @@ function EntryCard(props: { entry: LibraryEntry; onOpen: () => void }) {
 }
 
 export default function LibraryPage() {
+  const t = useT()
   const [tab, setTab] = useState<Tab>("liked")
   const [openIdea, setOpenIdea] = useState<LibraryEntry | null>(null)
-
   const [state, setState] = useState<LibraryState>(() => loadLibrary())
 
   useEffect(() => {
@@ -77,10 +70,10 @@ export default function LibraryPage() {
     <main className="mx-auto max-w-5xl px-4 py-8">
       <div className="mb-6 flex items-start justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold">{labels.title}</h1>
-          <p className="text-sm text-muted-foreground">{labels.subtitle}</p>
+          <h1 className="text-2xl font-semibold">{t("library.title")}</h1>
+          <p className="text-sm text-muted-foreground">{t("library.subtitle")}</p>
           <a className="mt-2 inline-block text-sm underline" href="/">
-            {labels.navHome}
+            {t("nav.home")}
           </a>
         </div>
         <LangSwitch />
@@ -88,27 +81,35 @@ export default function LibraryPage() {
 
       <div className="mb-4 flex gap-2">
         <button
-          className={`rounded-md border px-3 py-2 text-sm ${tab === "liked" ? "bg-foreground text-background" : "bg-background"}`}
+          className={`rounded-md border px-3 py-2 text-sm ${
+            tab === "liked" ? "bg-foreground text-background" : "bg-background"
+          }`}
           onClick={() => setTab("liked")}
         >
-          {labels.liked} ({state.liked.length})
+          {t("library.liked")} ({state.liked.length})
         </button>
         <button
-          className={`rounded-md border px-3 py-2 text-sm ${tab === "disliked" ? "bg-foreground text-background" : "bg-background"}`}
+          className={`rounded-md border px-3 py-2 text-sm ${
+            tab === "disliked" ? "bg-foreground text-background" : "bg-background"
+          }`}
           onClick={() => setTab("disliked")}
         >
-          {labels.disliked} ({state.disliked.length})
+          {t("library.disliked")} ({state.disliked.length})
         </button>
       </div>
 
       <Separator className="mb-4" />
 
       {list.length === 0 ? (
-        <p className="text-sm text-muted-foreground">{labels.empty}</p>
+        <p className="text-sm text-muted-foreground">{t("library.empty")}</p>
       ) : (
         <div className="grid gap-4 md:grid-cols-2">
           {list.map((entry) => (
-            <EntryCard key={`${entry.reportId}:${entry.idea.id}`} entry={entry} onOpen={() => setOpenIdea(entry)} />
+            <EntryCard
+              key={`${entry.reportId}:${entry.idea.id}`}
+              entry={entry}
+              onOpen={() => setOpenIdea(entry)}
+            />
           ))}
         </div>
       )}
