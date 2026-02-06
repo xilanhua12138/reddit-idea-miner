@@ -29,12 +29,13 @@ export function HomeClient() {
 
     setLoading(true)
     try {
+      // Step 1: Fetch Reddit data in browser (to avoid 403)
       const { redditTryBases, buildSearchUrl, buildCommentsUrl } = await import(
         "@/lib/client-reddit"
       )
-      const { generateReportClient } = await import("@/lib/generate-client")
+      const { gatherRedditData } = await import("@/lib/gather-client")
 
-      const report = await generateReportClient({
+      const { quotes, stats } = await gatherRedditData({
         keyword,
         subreddit: subreddit.trim() || undefined,
         range,
@@ -51,16 +52,23 @@ export function HomeClient() {
           redditTryBases((base) => buildCommentsUrl(base, postId)),
       })
 
-      const res = await fetch("/api/report/save", {
+      // Step 2: Send to AI analysis API
+      const res = await fetch("/api/report/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ report }),
+        body: JSON.stringify({
+          keyword,
+          subreddit: subreddit.trim() || undefined,
+          range,
+          quotes,
+          stats,
+        }),
       })
 
       const data = await res.json().catch(() => ({}))
-      if (!res.ok) throw new Error(data?.error || `Save failed (${res.status})`)
+      if (!res.ok) throw new Error(data?.error || `Analysis failed (${res.status})`)
 
-      router.push(`/r/${data.reportId}`)
+      router.push(`/r/${data.report.id}`)
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : null
       setError(msg || t("errors.generic_fail"))
